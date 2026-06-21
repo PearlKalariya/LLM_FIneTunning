@@ -29,4 +29,4 @@ Training: `transformers`, `peft`, `bitsandbytes`, `trl`, `datasets`. Tracking: W
 ## Status
 
 Pre-implementation. Docs first; code follows the [roadmap](docs/ROADMAP.md).
-# LL_FIneTunning
+# LLM_FIneTunning
