@@ -1,0 +1,27 @@
+# secrets
+.env
+*.key
+
+# data — keep only the hand-labeled differentiator set
+data/raw/*
+!data/raw/indian_market.jsonl
+data/processed/
+data/cache/
+
+# model artifacts
+adapters/*/checkpoint-*/
+*.gguf
+*.bin
+*.safetensors
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# wandb
+wandb/
+
+# os
+.DS_Store

@@ -26,7 +26,20 @@ This is the training-loop project: dataset curation → QLoRA fine-tune → befo
 
 Training: `transformers`, `peft`, `bitsandbytes`, `trl`, `datasets`. Tracking: Weights & Biases. Serving: FastAPI + `peft` adapter hot-swap. Demo: Next.js. Compute: Colab/Kaggle free-tier T4 (QLoRA, 4-bit).
 
+## Run
+
+```bash
+make install   # deps (Colab/T4 for training; CPU ok for data/test)
+make data      # curate -> stratified split -> data/processed/*.jsonl
+make train     # QLoRA fine-tune (run on T4)
+make eval      # baseline vs fine-tuned -> eval_results.json
+make serve     # FastAPI on :8020
+make test      # unit tests (schema + data prep)
+```
+
 ## Status
 
-Pre-implementation. Docs first; code follows the [roadmap](docs/ROADMAP.md).
-# LLM_FIneTunning
+Pipeline wired end-to-end. Data prep + unit tests run on CPU (verified, 11 passing).
+Training/eval/serve are Colab/T4-ready (lazy GPU imports). Remaining: run the first
+fine-tune on a T4 and fill real eval numbers. 159 labeled Indian-market examples ready.
+Code follows the [roadmap](docs/ROADMAP.md).
