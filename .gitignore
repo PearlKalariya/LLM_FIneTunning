@@ -25,3 +25,7 @@ wandb/
 
 # os
 .DS_Store
+
+# large artifacts
+adapter.zip
+*.zip

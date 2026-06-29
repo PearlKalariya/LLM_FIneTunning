@@ -66,15 +66,23 @@ class Engine:
 
     def generate(self, text: str, task: str | None = None, retry: bool = True) -> str:
         """Run inference. task=None -> base model (zero-shot baseline)."""
+        import contextlib
+
         if task and self.has(task):
             self.model.set_adapter(task)          # hot-swap, no base reload
         elif task:
             raise KeyError(f"adapter not loaded: {task}")
 
-        out = self._decode(build_prompt(text))
-        if retry and not parse_and_validate(out).ok:
-            out = self._decode(build_prompt(text) + "{")   # nudge into JSON
-            out = out if out.lstrip().startswith("{") else "{" + out
+        # task=None: an attached PeftModel keeps its adapter active by default,
+        # so disable it to get a TRUE base-model baseline (else baseline ==
+        # fine-tuned and the eval delta is always 0).
+        ctx = (self.model.disable_adapter()
+               if not task and self._adapters else contextlib.nullcontext())
+        with ctx:
+            out = self._decode(build_prompt(text))
+            if retry and not parse_and_validate(out).ok:
+                out = self._decode(build_prompt(text) + "{")   # nudge into JSON
+                out = out if out.lstrip().startswith("{") else "{" + out
         return out
 
     def _decode(self, prompt: str) -> str:

@@ -22,7 +22,8 @@ conciseness (one factual line). Reply with ONLY the integer 1-5."""
 
 
 def score_one(snippet: str, gold: str, pred: str) -> int:
-    """Single judgment. Returns 1–5; 1 on API/parse failure (conservative)."""
+    """Single judgment. Returns 1–5; 0 if judge unavailable (no sdk / no key /
+    API error e.g. out of credits) so it's excluded from the average."""
     try:
         import anthropic
     except ImportError:
@@ -30,16 +31,20 @@ def score_one(snippet: str, gold: str, pred: str) -> int:
     key = os.getenv("ANTHROPIC_API_KEY")
     if not key:
         return 0
-    client = anthropic.Anthropic(api_key=key)
-    msg = client.messages.create(
-        model=JUDGE_MODEL,
-        max_tokens=8,
-        messages=[{"role": "user", "content": JUDGE_PROMPT.format(
-            snippet=snippet, gold=gold, pred=pred)}],
-    )
-    text = msg.content[0].text.strip()
-    m = re.search(r"[1-5]", text)
-    return int(m.group()) if m else 1
+    try:
+        client = anthropic.Anthropic(api_key=key)
+        msg = client.messages.create(
+            model=JUDGE_MODEL,
+            max_tokens=8,
+            messages=[{"role": "user", "content": JUDGE_PROMPT.format(
+                snippet=snippet, gold=gold, pred=pred)}],
+        )
+        text = msg.content[0].text.strip()
+        m = re.search(r"[1-5]", text)
+        return int(m.group()) if m else 1
+    except Exception as e:  # API/network failure -> skip judge, don't crash eval
+        print(f"[warn] llm_judge unavailable, skipping: {e}")
+        return 0
 
 
 def average_score(snippets, golds, preds) -> float:
