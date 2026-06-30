@@ -6,7 +6,7 @@ This is the training-loop project: dataset curation → QLoRA fine-tune → befo
 
 ## One-line pitch
 
-> Fine-tuned Llama-3.2-3B via QLoRA on a custom Indian financial-news dataset, improving structured-extraction accuracy from X% (zero-shot baseline) to Y%; built a multi-adapter FastAPI serving layer with W&B-tracked training pipeline.
+> Fine-tuned Llama-3.2-3B via QLoRA on a custom Indian financial-news dataset, lifting entity-extraction exact-match from 3.8% (zero-shot baseline) to 87.2%; built a multi-adapter FastAPI serving layer with a W&B-tracked training pipeline.
 
 ## Quick links
 
@@ -39,7 +39,8 @@ make test      # unit tests (schema + data prep)
 
 ## Status
 
-Pipeline wired end-to-end. Data prep + unit tests run on CPU (verified, 11 passing).
-Training/eval/serve are Colab/T4-ready (lazy GPU imports). Remaining: run the first
-fine-tune on a T4 and fill real eval numbers. 159 labeled Indian-market examples ready.
+Pipeline run end-to-end on a Colab T4: QLoRA fine-tune complete, baseline-vs-finetuned
+eval done (entity exact-match 3.8% → 87.2%; see [docs/EVALUATION.md](docs/EVALUATION.md)).
+Data prep + unit tests run on CPU (verified, 11 passing). Remaining: serve-time
+latency/VRAM numbers and the LLM-judge metric (needs Anthropic credits).
 Code follows the [roadmap](docs/ROADMAP.md).
